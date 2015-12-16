@@ -1,0 +1,209 @@
+
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel mb25">
+
+      <div class="panel-heading">
+        <div class="col-lg-1"></div>
+        <h2 class="col-lg-10">Summary</h2>
+        <div class="col-lg-1"></div>
+      </div>
+      <div class="panel-body">
+        <div class="col-lg-6">
+          <nvd3 ng-if="performanceChart" options="performanceChart.options" data="performanceChart.data"></nvd3>
+        </div>
+        <div class="col-lg-3">
+          <nvd3 ng-if="riskChart" options="riskChart.options" data="riskChart.data"></nvd3>
+        </div>
+        <div class="col-lg-3">
+          <nvd3 ng-if="allocationChart" options="allocationChart.options" data="allocationChart.data"></nvd3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-1"></div>
+    <div class="col-lg-10">
+      <div class="panel mb25">
+        <div class="panel-heading">
+          <h2 class="col-lg-12">Portfolio Weightings</h2>
+        </div>
+        <div class="panel-body">
+          <div class="col-lg-12">
+            <div class="table-responsive table-portfolios">
+              <table class="table table-bordered table-striped mb0">
+                <thead>
+                  <tr>
+                    <th>Asset Class</th>
+                    <th>Ticker</th>
+                    <th>Price</th>
+                    <th>Shares</th>
+                    <th>Value</th>
+                    <th>Weight</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="portfolio in portfolios">
+                    <td ng-bind="portfolio.asset_class"></td>
+                    <td ng-bind="portfolio.ticker"></td>
+                    <td>$<span ng-bind="portfolio.price"></span></td>
+                    <td ng-bind="portfolio.shares"></td>
+                    <td>$<span ng-bind="portfolio.shares * portfolio.price"></span></td>
+                    <td class="col-md-3">
+                      <div class="progress-tick"><span ng-bind="Math.round(portfolio.shares * portfolio.price / (portfolioSum / 100))"></span>%</div>
+                      <div class="progress">
+                        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" ng-style="{ 'width': Math.round(portfolio.shares * portfolio.price / (portfolioSum / 100)) + '%' }"></div>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td><b>Total</b></td>
+                    <td colspan="3"></td>
+                    <td><b>$<span ng-bind="portfolioSum"></span></b></td>
+                    <td><b>100%</b></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-heading">
+          <h2 class="col-lg-12">Perfomance Details</h2>
+        </div>
+        <div class="panel-body">
+          <div class="asset-classes-wrap static clearfix mb20">
+            <div class="col-lg-3" ng-repeat="assetClass in assetClasses track by assetClass.id">
+              <span class="asset-class text-center btn-lg" ng-class="{'bg-disabled': arrayIndexOf(selectedAssetClasses, assetClass) < 0, 'bg-primary': arrayIndexOf(selectedAssetClasses, assetClass) > -1}" disabled ng-bind="assetClass.name"></span>
+            </div>
+          </div>
+          <div class="col-lg-12 box-tab">
+            <ul class="nav nav-tabs">
+              <li class="active"><a data-target="#perf-tab-summary" data-toggle="tab">Summary</a></li>
+              <li><a data-target="#perf-tab-performance" data-toggle="tab">Performance</a></li>
+              <li><a data-target="#perf-tab-risk" data-toggle="tab">Risk</a></li>
+              <li><a data-target="#perf-tab-holdings" data-toggle="tab">Holdings</a></li>
+              <li><a data-target="#perf-tab-history" data-toggle="tab">History</a></li>
+            </ul>
+            <div class="tab-content">
+              <div class="tab-pane active in" id="perf-tab-summary">
+                <div class="table-responsive">
+                  <table class="table table-bordered table-striped mb0">
+                    <thead>
+                      <tr>
+                        <th>Strategy</th>
+                        <th>Description</th>
+                        <th>Risk</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr ng-repeat="strategy in selectedStrategies">
+                        <td ng-bind="strategy.name"></td>
+                        <td ng-bind="strategy.description"></td>
+                        <td><risk-icon risk="{{strategy.risk}}"></risk-icon></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="tab-pane" id="perf-tab-performance">
+                <div class="table-responsive">
+                  <table class="table table-bordered table-striped mb0">
+                    <thead>
+                      <tr>
+                        <th>Strategy</th>
+                        <th>CAGR</th>
+                        <th>YTD</th>
+                        <th>1 Year</th>
+                        <th>3 Year</th>
+                        <th>5 Year</th>
+                        <th>10 Year</th>
+                        <th>Annual Std Dev</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr ng-repeat="strategy in selectedStrategies">
+                        <td ng-bind="strategy.name"></td>
+                        <td ng-bind="strategy.cagr * 100 + '%'"></td>
+                        <td>3%</td>
+                        <td>5%</td>
+                        <td>3%</td>
+                        <td>5%</td>
+                        <td>12%</td>
+                        <td ng-bind="strategy.std_dev * 100 + '%'">12%</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="tab-pane" id="perf-tab-risk">
+                <div class="table-responsive">
+                  <table class="table table-bordered table-striped mb0">
+                    <thead>
+                      <tr>
+                        <th>Strategy</th>
+                        <th>Annual StdDev</th>
+                        <th>Sharpe Ratio</th>
+                        <th>Sortino Ratio</th>
+                        <th>Risk</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr ng-repeat="strategy in selectedStrategies">
+                        <td ng-bind="strategy.name"></td>
+                        <td>12%</td>
+                        <td>1.1</td>
+                        <td>1.1</td>
+                        <td><risk-icon risk="{{strategy.risk}}"></risk-icon></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="tab-pane" id="perf-tab-holdings">Tab holdings</div>
+              <div class="tab-pane" id="perf-tab-history">Tab history</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-body">
+          <h2>
+            <div class="col-sm-6">Investments</div>
+            <div class="col-sm-6">
+              <div class="text-right">
+                $<span ng-bind="investment | number"></span>
+              </div>
+            </div>
+          </h2>
+        </div>
+      </div>
+
+    <div class="panel">
+      <div class="panel-body">
+        <div class="buttons">
+          <div class="col-sm-12">
+            <a class="btn btn-default" ng-click="goBack()"><i class="fa fa-caret-left mr10"></i> Back</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel text-center subscribe-panel">
+      <div class="panel-heading"><h1 class="col-lg-12">Subscribe to updates for this strategy</h1></div>
+      <div class="panel-body">
+        <div class="col-lg-12">
+          <a class="btn btn-success btn-lg" ng-click="subscribe()">Confirm</a>
+        </div>
+      </div>
+    </div>
+
+    </div>
+    <div class="col-lg-1"></div>
+  </div>
+</div>
