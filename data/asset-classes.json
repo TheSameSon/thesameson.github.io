@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "name": "Stocks",
+    "key": "stocks"
+  },
+  {
+    "id": 2,
+    "name": "Bonds",
+    "key": "bonds"
+  },
+  {
+    "id": 3,
+    "name": "Real Estate",
+    "key": "real_estate"
+  },
+  {
+    "id": 4,
+    "name": "Commodities",
+    "key": "commodities"
+  }
+]
